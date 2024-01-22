@@ -11,8 +11,27 @@ export default function Trivia(props){
     useEffect(()=>{
         fetch("https://opentdb.com/api.php?amount=5")
             .then( res => res.json())
-            .then( data => {setQues(data.results)})
+            .then( data => {
+                setQues(() => {
+                    return data.results.map(item=>{
+                        return {
+                            id: nanoid(),
+                            ques: decode(item.question),
+                            answers: shuffleArray([...item.incorrect_answers, item.correct_answer]),
+                            correctAnswer: decode(item.correct_answer)
+                        }
+                    })
+                })
+            })
     },[])
+
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array
+    }
 
     function updateAnswer(index, selectedAns){
         setMarkedAnswers(oldAnswers => {
@@ -31,7 +50,7 @@ export default function Trivia(props){
     function count(){
         let count = 0
         ques.map((question, index) => {
-            if(question.correct_answer === markedAnswers[index]){
+            if(question.correctAnswer === markedAnswers[index]){
                 count++
             }
         })
@@ -42,19 +61,18 @@ export default function Trivia(props){
         props.setPage("intro")
     }
 
+
     function getQuestionEl(){ 
         return ques.map((question, index) => {
-            const id = nanoid()
             return <Question
-                        key = {id}
-                        id = {id} 
-                        ques={decode(question.question)}
-                        answers = {[...question.incorrect_answers, question.correct_answer]}
+                        key = {question.id}
+                        ques={question.ques}
+                        answers = {question.answers}
                         updateAnswer = {updateAnswer}
                         quesIndex = {index}
                         markedAnswers = {markedAnswers}
                         isAllAnswered = {isAllAnswered}
-                        correctAnswer = {decode(question.correct_answer)}
+                        correctAnswer = {question.correctAnswer}
                     />
         })
     }
