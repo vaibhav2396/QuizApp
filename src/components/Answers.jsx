@@ -4,6 +4,7 @@ import { decode } from "html-entities"
 export default function Answers(props){
     
     return props.answers.map(answer =>{
+        answer = decode(answer).trim()
         let classes=[]
         if(props.isAllAnswered){
             answer === props.correctAnswer? classes.push('correct') : null
