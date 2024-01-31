@@ -42,9 +42,10 @@ export default function Trivia(props){
     }
     
     function chkAns(){
-        if(markedAnswers.length === ques.length){
+        if(markedAnswers.length === ques.length && !markedAnswers.includes(undefined)){
             setIsAllAnswered(true)
         }
+        
     }
 
     function count(){
